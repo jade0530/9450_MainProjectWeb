@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Template Altered from --> 
+<head>
+<title>Web-based tool to investigate Enhancer Signals</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+  body {font-family: "Lato", sans-serif}
+  .mySlides {display: none}
+
+  /* .input-container {
+    display: flex;
+    align-items: center;
+  } */
+
+  /* Style for the error message */
+  .error-message {
+    display: none; /* Initially hide the error message */
+    white-space: nowrap; /* Prevent line breaks */
+  }
+
+  /* Style for error messages */
+  .red{
+    color: red;
+  }
+
+  /* Style for non-error messages */
+  .green{
+    color: green;
+  }
+
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<div class="w3-top">
+  <div class="w3-bar w3-black w3-card">
+    <a class="w3-bar-item w3-button w3-padding-large w3-hide-medium w3-hide-large w3-right" href="javascript:void(0)" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
+    <a href="index.html" class="w3-bar-item w3-button w3-padding-large">HOME</a>
+    <a href="documentation.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small">DOCUMENTATION</a>
+    <a href="run_model.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small">RUN MODEL</a>
+  </div>
+</div>
+
+<!-- Page content -->
+<div class="w3-content" style="max-width:2000px;margin-top:46px">
+  <div class="w3-content w3-padding-64" id="welcome">
+    <h2 style="font-weight: 500;">Please Upload your gene files here: </h2>
+    <p>A description of what kind of file it will accept</p>
+    <form>
+        <input class="w3-button w3-light-grey" id="file" type="file" />
+        <button class="w3-button w3-light-grey">Upload</button>  <!-- Here to store to the backend? -->
+    </form>
+    <p>I think it should have a preview of at least nrows and ncolumns of the the dataset here</p>
+    <button class="w3-button w3-light-grey" style="color: blueviolet">Run the Model</button>
+</div>
+
+
+<!-- Footer -->
+<footer class="w3-container w3-padding-64 w3-center w3-opacity w3-light-grey w3-xlarge">
+  <div class="w3-row">
+    <div class="w3-center w3-large w3-margin-bottom">
+      <i class="w3-center">Biomedical Machine Learning Lab (BML)</i><br>
+      <i class="w3-center fa fa-map-marker" style="width:30px"></i> 518, Samuels Building, F25, Samuel Terry Ave, Kensington NSW 2052<br>
+      <i class="w3-center fa fa-phone" style="width:30px"></i> Phone: +61 123 456 789<br>
+      <i class="w3-center fa fa-envelope" style="width:30px"> </i> Email: <a href="healthcodex@gmail.com">healthcodex@gmail.com</a><br>
+    </div>
+  </div>
+</footer>
+
+
+</body>
+</html>
