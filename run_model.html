@@ -52,13 +52,47 @@
   <div class="w3-content w3-padding-64" id="welcome">
     <h2 style="font-weight: 500;">Please Upload your gene files here: </h2>
     <p>A description of what kind of file it will accept</p>
-    <form>
-        <input class="w3-button w3-light-grey" id="file" type="file" />
-        <button class="w3-button w3-light-grey">Upload</button>  <!-- Here to store to the backend? -->
+    <form id="predictionForm">
+        <input class="w3-button w3-light-grey" type="file" id="fileInput" name="fileInput" accept=".csv, .txt" required>
+        <button class="w3-button w3-light-grey" onclick="makePrediction()">Upload</button>  <!-- Here to store to the backend? -->
     </form>
     <p>I think it should have a preview of at least nrows and ncolumns of the the dataset here</p>
+    <p id="datapreview"> Here should be the data preview: </p>
     <button class="w3-button w3-light-grey" style="color: blueviolet">Run the Model</button>
-</div>
+
+    <script>
+      function makePrediction() {
+        // Get input file from the form
+        const fileInput = document.getElementById('fileInput');
+  
+        // Create a FormData object to handle file uploads
+        const formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+  
+        // Make a POST request to the Flask backend with the FormData
+        fetch('http://127.0.0.1:5000/predict', {
+          method: 'POST',
+          body: formData,
+        })
+        .success(function (data) {
+          console.log(data);
+        })
+        .then(response => {
+          console.log('Raw response:', response);
+          return response.json()})
+        .then(data => {
+          console.log(data);
+          // Display the prediction result on the webpage
+          const predictionResultElement = document.getElementById('datapreview');
+          predictionResultElement.textContent = JSON.stringify(data);
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          // Handle errors if needed
+        });
+      }
+    </script>
+  </div>
 
 
 <!-- Footer -->
