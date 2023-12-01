@@ -54,9 +54,11 @@
     <p>A description of what kind of file it will accept</p>
     <form id="predictionForm">
         <input class="w3-button w3-light-grey" type="file" id="fileInput" name="fileInput" accept=".csv, .txt" required>
-        <button class="w3-button w3-light-grey" onclick="makePrediction()">Upload</button>  <!-- Here to store to the backend? -->
+        <button class="w3-button w3-light-grey" onclick="displayFileContents(); makePrediction()">Upload</button>  <!-- Here to store to the backend? -->
     </form>
-    <p>I think it should have a preview of at least nrows and ncolumns of the the dataset here</p>
+    <h3>File Contents Preview:</h2>
+    <pre id="inputShape"></pre>
+    <pre id="fileContents"></pre>
     <p id="datapreview"> Here should be the data preview: </p>
     <button class="w3-button w3-light-grey" style="color: blueviolet">Run the Model</button>
 
@@ -91,6 +93,34 @@
           // Handle errors if needed
         });
       }
+
+      function displayFileContents() {
+      const fileInput = document.getElementById('fileInput');
+      const fileContentsElement = document.getElementById('fileContents');
+      const inputShapeElement = document.getElementById('inputShape');
+
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+
+      reader.onload = function (e) {
+        // Display the file contents
+        const fileContents = e.target.result;
+        fileContentsElement.textContent = fileContents;
+
+        // Calculate the number of rows and columns
+        const rows = fileContents.split('\n').length;
+        const columns = fileContents.split('\n')[0].split('\t').length;
+
+        // Display the file information
+        inputShapeElement.textContent = `Rows: ${rows}\nColumns: ${columns}`;
+      };
+
+      // Read the file as text
+      reader.readAsText(file);
+
+      // Prevent the form from submitting (prevents page refresh)
+      event.preventDefault();
+    }
     </script>
   </div>
 
