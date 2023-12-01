@@ -1,11 +1,16 @@
 from flask import Flask, request, jsonify, make_response, render_template
 from werkzeug.utils import secure_filename
 import os
+import sys
 import numpy as np
 import pandas as pd
 import json 
 # from tensorflow.keras.models import load_model
 from sklearn.preprocessing import StandardScaler
+
+# Add the project root directory to the system path
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(project_root)
 
 app = Flask(__name__)
 
@@ -16,6 +21,18 @@ app = Flask(__name__)
 # Load your scikit-learn components
 #scaler = StandardScaler()
 #scaler = scaler.fit(your_training_data)  # Update with your actual training data
+
+from copy import deepcopy
+from EPNET.model import nn
+
+# load model 
+print("1")
+model_params_ = deepcopy(params.models[0])
+model = nn.Model(**model_params_['params'])
+model.load_model(filename)
+
+# make prediction
+Y = model.predict(X)
 
 # Set the upload folder
 UPLOAD_FOLDER = '~/9450/9450_MainProjectWeb/uploads'
