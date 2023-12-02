@@ -54,37 +54,33 @@
     <p>A description of what kind of file it will accept</p>
     <form id="predictionForm">
         <input class="w3-button w3-light-grey" type="file" id="fileInput" name="fileInput" accept=".csv, .txt" required>
-        <button class="w3-button w3-light-grey" onclick="displayFileContents(); makePrediction()">Upload</button>  <!-- Here to store to the backend? -->
+        <button class="w3-button w3-light-grey" onclick="displayFileContents()">Upload</button>  <!-- Here to store to the backend? -->
     </form>
     <h3>File Contents Preview:</h2>
-    <pre id="inputShape"></pre>
+    <pre id="inputShape"></pre> 
     <pre id="fileContents"></pre>
-    <button class="w3-button w3-light-grey" style="color: blueviolet">Run the Model</button>
+    <button class="w3-button w3-light-grey" onclick="makePrediction()" style="color: blueviolet">Run the Model</button>
+    <h3>Prediction:</h3>
+    <pre id="prediction"></pre>
 
     <script>
       function makePrediction() {
         // Get input file from the form
         const fileInput = document.getElementById('fileInput');
-  
+        
         // Create a FormData object to handle file uploads
         const formData = new FormData();
-        formData.append('file', fileInput.files[0]);
-  
+        formData.append('fileInput', fileInput.files[0]);
+
         // Make a POST request to the Flask backend with the FormData
         fetch('http://127.0.0.1:5000/predict', {
           method: 'POST',
           body: formData,
         })
-        .success(function (data) {
-          console.log(data);
-        })
-        .then(response => {
-          console.log('Raw response:', response);
-          return response.json()})
+        .then(response => response.json()) // Parse the JSON from the response
         .then(data => {
-          console.log(data);
           // Display the prediction result on the webpage
-          const predictionResultElement = document.getElementById('datapreview');
+          const predictionResultElement = document.getElementById('prediction');
           predictionResultElement.textContent = JSON.stringify(data);
         })
         .catch(error => {
@@ -93,7 +89,7 @@
         });
       }
 
-      function displayFileContents() {
+    function displayFileContents() {
       const fileInput = document.getElementById('fileInput');
       const fileContentsElement = document.getElementById('fileContents');
       const inputShapeElement = document.getElementById('inputShape');

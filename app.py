@@ -4,91 +4,104 @@ import os
 import sys
 import numpy as np
 import pandas as pd
-import json 
-# from tensorflow.keras.models import load_model
-from sklearn.preprocessing import StandardScaler
+import importlib
+from copy import deepcopy
+from model import nn
+from flask import Flask
+from flask_cors import CORS
+
+app = Flask(__name__)
+CORS(app)
 
 # Add the project root directory to the system path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(project_root)
 
-app = Flask(__name__)
+filename = 'EPNET/_logs/enh_vs_genes/log/fs/P-net.h5'
 
-### This is the model part ###
-# Load your pre-trained Keras model
-#keras_model = load_model('path/to/your/keras_model.h5')
-
-# Load your scikit-learn components
-#scaler = StandardScaler()
-#scaler = scaler.fit(your_training_data)  # Update with your actual training data
-
-from copy import deepcopy
-from EPNET.model import nn
+params_file = 'EPNET/train/params/P1000/pnet/onsplit_average_reg_10_tanh_large_testing.py'
 
 # load model 
 print("1")
+loader = importlib.machinery.SourceFileLoader('params', params_file)
+params = loader.load_module()
 model_params_ = deepcopy(params.models[0])
 model = nn.Model(**model_params_['params'])
 model.load_model(filename)
 
-# make prediction
-Y = model.predict(X)
-
 # Set the upload folder
-UPLOAD_FOLDER = '~/9450/9450_MainProjectWeb/uploads'
+# UPLOAD_FOLDER = '~/9450/9450_MainProjectWeb/uploads'
 ALLOWED_EXTENSIONS = {'csv', 'txt'}
 
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+# app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Function to check if the file extension is allowed
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+# If without CORS (and wepbage files located within EPNET model directory)
+# @app.route('/')
+# def index():
+#     return render_template('run_model.html')
+
+@app.route('/index')
+def home():
+    return render_template('index_html')
+
+@app.route('/run_model')
+def run_model():
+    return render_template('run_model.html')
+
+@app.route('/documentation')
+def documentation():
+    return render_template('documentation.html')
+
+@app.route('/regSuccess')
+def regSuccess():
+    return render_template('regSucess.html')
+
 @app.route('/predict', methods=['POST'])
 def predict():
     # Get the uploaded file
-    file = request.files['file']
-
+    file = request.files['fileInput']
+    print("1")
     # Check if the file is provided and has an allowed extension
     if file and allowed_file(file.filename):
-        # Save the file to the upload folder
-        print("Received file:", file.filename)
-        #filename = secure_filename(file.filename)
-        #file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        #file.save(file_path)
 
-        # Perform any necessary preprocessing on the file
-        # For example, read data from the file and transform it
-        # This step will depend on the specific requirements of your model
-        #processed_data = process_uploaded_file(file_path, scaler)
+        print(file)
+
+        # Perform preprocessing on the file
         processed_data = process_uploaded_file(file)
 
+        # Make predictions using the loaded model
+        prediction = model.predict(processed_data)
 
-        # Make predictions using the loaded Keras model
-        # prediction = keras_model.predict(np.array(processed_data).reshape(1, -1))
+        # Convert the numpy array to a list (or nested list) before returning
+        prediction_list = prediction.tolist()
 
-        # Return the predictions as JSON
-        print("Sending response:", processed_data)
-        return render_template('run_model.html')
+        # Return the result as JSON
+        return jsonify({'prediction': prediction_list})
     else:
         return jsonify({'error': 'Invalid file or file format'})
 
-def process_uploaded_file(file_path):
-    # Placeholder function for preprocessing the uploaded file
-    # You need to implement this based on your specific requirements
-    # For example, read data from the file, transform it, and return the processed data
-    # Make sure the processed data has the same format as your model expects
+def process_uploaded_file(file):
 
-    # Example: Reading a CSV file
-    data = pd.read_csv(file_path,sep="\t", header=None)  # Update the delimiter based on your file format
+    # Step 1: Read the file and extract the data
+    # Skip the first line
+    header_line = file.readline()
+    lines = [line.decode('utf-8') for line in file.readlines()]
+
+    # Step 2: Tokenize the data
+    data = [line.split('\t') for line in lines]
+
+    # Step 3: Convert the data into a NumPy array
+    # Assuming the first element of each line is not part of the matrix
+    matrix_data = np.array(data)[:, 1:]
+
+    # Convert the data to a numeric type if needed
+    matrix_data = matrix_data.astype(float)
     
-    # We can do many more things here 
-    #print(data.head())
-    # Example: Scaling the data using a scaler
-    #scaled_data = scaler.transform(data)
-    json_data = data.to_json(orient='records')
-    # Example: Returning the processed data
-    return jsonify(json_data)
+    return matrix_data
 
 if __name__ == '__main__':
     app.run(debug=True)
